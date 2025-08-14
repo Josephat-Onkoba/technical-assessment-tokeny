@@ -1,47 +1,67 @@
-# TaskFlow - MERN Stack Task Management Application
+# TaskFlow - Technical Assessment (Completed)
 
-## Project Overview
-This project is an implementation of the TaskFlow test, a MERN stack task management application with authentication, task management, filtering, and administrative features.
+## Overview
+This repository contains a working React/Vite app with a Node/Express backend scaffold. The assessment tasks have been implemented with a focus on client-side behavior using localStorage for easy local testing.
 
-## Technologies Used
-- **Frontend**: React, React Router, TailwindCSS
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
-- **Authentication**: JWT-based authentication
-- **State Management**: React Context API and localStorage
+## Stack
+- Frontend: React, React Router, TailwindCSS, Vite
+- Backend scaffold: Node.js, Express (not required to run the tasks locally)
+- State/persistence: React Context API + localStorage
+- Tests: Vitest + Testing Library (jsdom)
 
-### Prerequisites
-- Node.js v20.14.0
-- NPM v10.7.0
-- MongoDB
+## What’s done
+1) Task 1 – Display Login/Register page before the landing page
+- “/” redirects to “/login”. Landing is only reachable after auth.
+- When logged out, only the Dashboard tab shows in sidebars; navbar hides Tasks/Profile.
 
+2) Task 2 – Task Filter
+- Dedicated page at /user/task-filter with the user sidebar.
+- Filter by status (All/Complete/Incomplete) and search by title/description.
+- Reads tasks from localStorage and normalizes different task shapes.
 
-## Test Problems
-1. **Complete the tasks**:
+3) Task 3 – Admin User Logs
+- Admin page at /admin/user-logs shows username, role, login/logout times, token name, and IP.
+- Admin can delete individual logs.
+- Navbar logout updates the last login entry with logout time if present, or appends a logout record.
+- Sidebar remains visible on the logs page (consistent admin layout).
 
-△ Task 1 - Display Login/Register page before the landing page
-- Users are should to login first to access the full list of tabs.
-- When they're logged out, only Dashboard panel should to be displayed.
+4) Manage Users page improvement
+- Loads users from remote API when available.
+- Falls back to local demo users stored in localStorage if offline, so the table always shows data.
 
-△ Task 2 - Task Filter
-- Allow users to filter tasks based on their completion status (e.g., show only completed or incomplete tasks).
-- Optional: Add a search feature to filter tasks by title.
+5) Tests
+- Added a single integration test covering Tasks 1–3 with Vitest/Testing Library.
 
-△ Task 3 - Add User Log page on the Admin page
-- Display the user logs(login time, logout time, JWT token name, user name, role, ip address)
-- The user logs could be deleted by admin action - DELETE
+## How to run
+1) Install deps and start dev server
+```bash
+npm install
+npm run dev
+```
+Open the URL shown in the terminal (typically http://localhost:5173).
 
-2. **Commit Your Changes**:
-- Make sure you commit your changes regularly:
-    ```bash
-    git add .
-    git commit -m "Task1 completed!"
-    git push origin main
-    ```
+2) Demo accounts (local only)
+- Admin: admin@example.com / password123
+- User: user@example.com / password123
 
-3. **Submit Your Repository Link**:
-- Once you’ve completed the tasks, send the result to https://forms.gle/1E2z5713vGV9vhr4A.
-- Please make sure that your repository is **public** or share access if it's private.
+## How to test the tasks manually
+- Task 1: Visit “/”. You should be redirected to “/login”. After logging in, navbar shows Tasks/Profile and full side menu appears.
+- Task 2: User → Task Filter (left sidebar) or go to “/user/task-filter”. Filter by status and search; counts update live.
+- Task 3: Admin → User Logs (left sidebar) or “/admin/user-logs”. Observe logs, click delete on a row to remove it.
 
-4. **Deadline**:
-  45min ~ 1 hour
+## Run automated tests
+```bash
+npm run test
+```
+
+## Files changed (high level)
+- Routing/auth: `src/App.jsx`, `src/contexts/AuthContext.jsx`
+- Navbar/Sidebars: `src/components/common/Navbar.jsx`, `src/pages/UserPages/UserSidebar.jsx`, `src/components/admin/Sidebar.jsx`
+- Task Filter: `src/components/tasks/TaskFilter.jsx`, `src/pages/UserPages/TaskFilterPage.jsx`
+- Admin Logs: `src/pages/AdminPages/UserLogPage.jsx`
+- Manage Users: `src/pages/AdminPages/ManageUsers.jsx`
+- Tests/setup: `vite.config.js`, `vitest.setup.js`, `src/__tests__/app.e2e.test.jsx`
+
+## Notes
+- The backend is not required to verify tasks; localStorage is used to simulate data.
+- `.env` files are excluded from version control.
