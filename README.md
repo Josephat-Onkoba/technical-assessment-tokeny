@@ -17,21 +17,11 @@ This repository contains a working React/Vite app with a Node/Express backend sc
 2) Task 2 – Task Filter
 - Accessible via a filter icon/button at the top right of the user dashboard (no separate page).
 - Opens a modal with status (All/Complete/Incomplete) and search by title/description.
-- Kanban board updates live as you filter/search.
-- Reads tasks from localStorage and normalizes different task shapes.
 
 3) Task 3 – Admin User Logs
 - Admin page at /admin/user-logs shows username, role, login/logout times, token name, and IP.
 - Admin can delete individual logs.
 - Navbar logout updates the last login entry with logout time if present, or appends a logout record.
-- Sidebar remains visible on the logs page (consistent admin layout).
-
-4) Manage Users page improvement
-- Loads users from remote API when available.
-- Falls back to local demo users stored in localStorage if offline, so the table always shows data.
-
-5) Tests
-- Added a single integration test covering Tasks 1–3 with Vitest/Testing Library.
 
 ## How to run
 1) Install deps and start dev server
