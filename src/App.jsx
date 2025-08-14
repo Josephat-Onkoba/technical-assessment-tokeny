@@ -38,6 +38,7 @@ import UserPage from "./pages/UserPages/UserPage";
 import NotificationsPage from "./pages/UserPages/NotificationsPage";
 import CalendarPage from "./pages/UserPages/CalendarPage";
 import ProfilePage from "./pages/UserPages/ProfilePage";
+import TaskFilterPage from "./pages/UserPages/TaskFilterPage";
 
 // Feature Components
 import TaskFilter from "./components/tasks/TaskFilter";
@@ -100,12 +101,21 @@ function App() {
             
             <main className="flex-grow">
               <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Landing />} />
+                {/* Public entry now forces auth first */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                {/* Landing is available only after login */}
+                <Route 
+                  path="/landing" 
+                  element={
+                    <ProtectedRoute>
+                      <Landing />
+                    </ProtectedRoute>
+                  } 
+                />
                 
                 {/* Protected Admin Routes */}
                 <Route 
@@ -210,7 +220,7 @@ function App() {
                   path="/user/task-filter" 
                   element={
                     <ProtectedRoute>
-                      <TaskFilter />
+                      <TaskFilterPage />
                     </ProtectedRoute>
                   } 
                 />

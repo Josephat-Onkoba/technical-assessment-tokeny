@@ -36,8 +36,8 @@ const TaskFilter = () => {
   });
 
   /**
-   * Load tasks from localStorage
-   * Uses localStorage for cross-component data sharing
+   * Load tasks from localStorage and normalize shapes
+   * Supports: {status:'complete'|'incomplete'} OR {completed:boolean} OR {progress:number}
    */
   useEffect(() => {
     const loadTasks = async () => {
@@ -50,13 +50,35 @@ const TaskFilter = () => {
         
         if (storedTasks) {
           const parsedTasks = JSON.parse(storedTasks);
-          setTasks(parsedTasks);
+          // Normalize tasks to ensure status/title/description are present
+          const normalized = (Array.isArray(parsedTasks) ? parsedTasks : []).map((t) => {
+            const title = t.title ?? t.name ?? "Untitled";
+            const description = t.description ?? "";
+            let status = t.status;
+            if (!status) {
+              if (typeof t.completed === 'boolean') {
+                status = t.completed ? 'complete' : 'incomplete';
+              } else if (typeof t.progress === 'number') {
+                status = t.progress >= 100 ? 'complete' : 'incomplete';
+              } else {
+                status = 'incomplete';
+              }
+            }
+            return {
+              ...t,
+              _id: t._id || t.id || crypto.randomUUID(),
+              title,
+              description,
+              status,
+            };
+          });
+          setTasks(normalized);
           
           // Apply initial filtering
-          applyFilters(parsedTasks, filters);
+          applyFilters(normalized, filters);
           
           // Calculate counts
-          updateCounts(parsedTasks);
+          updateCounts(normalized);
         } else {
           // Initialize with empty array if no tasks exist
           setTasks([]);
@@ -131,10 +153,11 @@ const TaskFilter = () => {
     // Apply search filter
     if (filterSettings.search.trim()) {
       const searchTerm = filterSettings.search.toLowerCase().trim();
-      result = result.filter(task => 
-        task.title.toLowerCase().includes(searchTerm) || 
-        task.description.toLowerCase().includes(searchTerm)
-      );
+      result = result.filter(task => {
+        const t = (task.title || '').toLowerCase();
+        const d = (task.description || '').toLowerCase();
+        return t.includes(searchTerm) || d.includes(searchTerm);
+      });
     }
     
     setFilteredTasks(result);

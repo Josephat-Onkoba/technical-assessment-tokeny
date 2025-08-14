@@ -6,13 +6,19 @@ const UserSidebar = () => {
   const location = useLocation();
 
   // Sidebar links with icons
-  const menuItems = [
-    { path: "/user/dashboard", label: "Dashboard", icon: <FaChartBar /> },
-    { path: "/user/userpage", label: "Create Tasks", icon: <FaTasks /> },
-    { path: "/user/calendar", label: "Calendar", icon: <FaCalendarAlt /> },
-    { path: "/user/notifications", label: "Notifications", icon: <FaBell /> },
-    { path: "/user/profile", label: "Profile", icon: <FaUser /> },
-  ];
+  const isAuthenticated = !!localStorage.getItem("token");
+  const menuItems = isAuthenticated
+    ? [
+        { path: "/user/dashboard", label: "Dashboard", icon: <FaChartBar /> },
+        { path: "/user/userpage", label: "Create Tasks", icon: <FaTasks /> },
+  { path: "/user/task-filter", label: "Task Filter", icon: <FaTasks /> },
+        { path: "/user/calendar", label: "Calendar", icon: <FaCalendarAlt /> },
+        { path: "/user/notifications", label: "Notifications", icon: <FaBell /> },
+        { path: "/user/profile", label: "Profile", icon: <FaUser /> },
+      ]
+    : [
+        { path: "/user/dashboard", label: "Dashboard", icon: <FaChartBar /> },
+      ];
 
   return (
     <div className="w-64 min-h-screen p-6 bg-gray-900 text-white glassmorphism border-r border-gray-700">

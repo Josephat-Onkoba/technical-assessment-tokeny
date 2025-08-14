@@ -112,16 +112,54 @@ const AuthProvider = ({ children }) => {
    * Clears authentication data and resets state
    */
   const handleLogout = () => {
+    // Capture user info BEFORE clearing storage to log logout event
+    const token = localStorage.getItem("token");
+    const email = localStorage.getItem("email");
+    const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("userRole") || "user";
+
+    try {
+      // Update userLogs: set logoutTime on the latest unmatched login
+      const logs = JSON.parse(localStorage.getItem("userLogs") || "[]");
+      const now = new Date().toISOString();
+
+      // Find the most recent log for this user that has action 'login' and no logoutTime
+      for (let i = logs.length - 1; i >= 0; i--) {
+        const entry = logs[i];
+        if (entry && entry.userId === userId && entry.action === "login" && !entry.logoutTime) {
+          entry.logoutTime = now;
+          break;
+        }
+      }
+
+      // If no matching login entry found, push a standalone logout entry
+      if (!logs.some(l => l.userId === userId && l.action === "login" && l.logoutTime === now)) {
+        logs.push({
+          id: `logout-${Date.now()}`,
+          userId: userId || "unknown",
+          username: email || "unknown",
+          role,
+          action: "logout",
+          loginTime: null,
+          logoutTime: now,
+          ipAddress: "127.0.0.1",
+          tokenName: token ? `${String(token).slice(0, 10)}...` : undefined,
+        });
+      }
+
+      localStorage.setItem("userLogs", JSON.stringify(logs));
+    } catch (e) {
+      console.error("Failed to record logout log:", e);
+    }
+
     // Clear all auth-related data from localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("userRole");
     localStorage.removeItem("userId");
     localStorage.removeItem("email");
-    
+
     // Reset user state
     setUser(null);
-    
-    // In a real app, we might also invalidate the token on the server
     console.log("User logged out");
   };
 

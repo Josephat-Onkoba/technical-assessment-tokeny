@@ -8,7 +8,8 @@ const Navbar = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const hideProfileRoutes = ["/", "/login", "/signup"];
+  const hideProfileRoutes = ["/", "/login", "/signup"]; // legacy paths
+  const isAuthenticated = !!localStorage.getItem("token");
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [taskListOpen, setTaskListOpen] = useState(false);
@@ -99,7 +100,7 @@ const Navbar = () => {
 
       <div className="flex items-center gap-4">
         {/* Task List Button (Hidden on Landing/Login/Signup) */}
-        {!hideProfileRoutes.includes(location.pathname) && (
+  {isAuthenticated && !hideProfileRoutes.includes(location.pathname) && (
           <div className="relative" ref={taskListRef}>
             <button
               onClick={() => setTaskListOpen(!taskListOpen)}
@@ -120,7 +121,7 @@ const Navbar = () => {
         )}
 
         {/* Profile Button (Hidden on Landing/Login/Signup) */}
-        {!hideProfileRoutes.includes(location.pathname) && (
+  {isAuthenticated && !hideProfileRoutes.includes(location.pathname) && (
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}

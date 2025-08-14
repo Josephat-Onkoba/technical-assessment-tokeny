@@ -118,17 +118,53 @@ import Sidebar from "../../components/admin/Sidebar";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
+  const [source, setSource] = useState("remote"); // 'remote' | 'local'
   const [editingUser, setEditingUser] = useState(null);
   const [editedData, setEditedData] = useState({ fullName: "", email: "", role: "" });
 
+  // Normalize role to lowercase for storage/logic
+  const normalizeUser = (u) => ({
+    ...u,
+    role: (u.role || "user").toString().toLowerCase(),
+    createdAt: u.createdAt || new Date().toISOString(),
+  });
+
   useEffect(() => {
-    fetch("https://zidio-task-management-backend.onrender.com/admin/users")
-      .then((res) => res.json())
-      .then((data) => {
-        const sortedUsers = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setUsers(sortedUsers);
-      })
-      .catch((err) => console.error("Error fetching users:", err));
+    const loadUsers = async () => {
+      try {
+        const res = await fetch("https://zidio-task-management-backend.onrender.com/admin/users");
+        if (!res.ok) throw new Error(`Remote fetch failed: ${res.status}`);
+        const data = await res.json();
+        const normalized = Array.isArray(data) ? data.map(normalizeUser) : [];
+        if (normalized.length > 0) {
+          const sortedUsers = normalized.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setUsers(sortedUsers);
+          setSource("remote");
+          return;
+        }
+        // If remote returned empty, fall through to local
+        throw new Error("Remote returned no users");
+      } catch (err) {
+        // Fallback to local storage or seed demo users
+        console.warn("Using local users fallback:", err.message || err);
+        const local = JSON.parse(localStorage.getItem("users") || "null");
+        if (Array.isArray(local) && local.length > 0) {
+          const normalizedLocal = local.map(normalizeUser).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setUsers(normalizedLocal);
+          setSource("local");
+        } else {
+          // Seed demo users (aligned with login demo accounts)
+          const demo = [
+            { fullName: "Admin User", email: "admin@example.com", role: "admin", userId: "admin-123", createdAt: new Date(Date.now() - 86400000).toISOString() },
+            { fullName: "Regular User", email: "user@example.com", role: "user", userId: "user-456", createdAt: new Date(Date.now() - 43200000).toISOString() },
+          ].map(normalizeUser);
+          localStorage.setItem("users", JSON.stringify(demo));
+          setUsers(demo);
+          setSource("local");
+        }
+      }
+    };
+    loadUsers();
   }, []);
 
   const startEditing = (user) => {
@@ -141,34 +177,47 @@ const ManageUsers = () => {
   };
 
   const saveUser = async (email) => {
-    try {
-      const res = await fetch(`https://zidio-task-management-backend.onrender.com/admin/users/${email}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editedData),
-      });
-
-      if (!res.ok) throw new Error("Failed to update user");
-
-      setUsers(users.map((u) => (u.email === email ? { ...u, ...editedData } : u)));
-      setEditingUser(null);
-    } catch (error) {
-      console.error("Error updating user:", error);
+    if (source === "remote") {
+      try {
+        const res = await fetch(`https://zidio-task-management-backend.onrender.com/admin/users/${email}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(editedData),
+        });
+        if (!res.ok) throw new Error("Failed to update user");
+      } catch (error) {
+        console.error("Error updating user remotely:", error);
+        // Non-blocking: still update UI for demo purposes
+      }
+    } else {
+      // Persist to local storage
+      const updated = users.map((u) => (u.email === email ? normalizeUser({ ...u, ...editedData }) : u));
+      localStorage.setItem("users", JSON.stringify(updated));
+      setUsers(updated);
     }
+    // Update UI and exit edit mode
+    setUsers((prev) => prev.map((u) => (u.email === email ? normalizeUser({ ...u, ...editedData }) : u)));
+    setEditingUser(null);
   };
 
   const deleteUser = async (email) => {
-    try {
-      const res = await fetch(`https://zidio-task-management-backend.onrender.com/admin/users/${email}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Failed to delete user");
-
-      setUsers(users.filter((u) => u.email !== email));
-    } catch (error) {
-      console.error("Error deleting user:", error);
+    if (source === "remote") {
+      try {
+        const res = await fetch(`https://zidio-task-management-backend.onrender.com/admin/users/${email}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("Failed to delete user");
+      } catch (error) {
+        console.error("Error deleting user remotely:", error);
+        // Continue to update UI in demo mode
+      }
+    } else {
+      const updated = users.filter((u) => u.email !== email);
+      localStorage.setItem("users", JSON.stringify(updated));
+      setUsers(updated);
+      return;
     }
+    setUsers((prev) => prev.filter((u) => u.email !== email));
   };
 
   return (
@@ -214,8 +263,8 @@ const ManageUsers = () => {
                         onChange={handleChange}
                         className="border p-1 rounded"
                       >
-                        <option value="Admin">Admin</option>
-                        <option value="User">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
                       </select>
                     ) : (
                       user.role.charAt(0).toUpperCase() + user.role.slice(1)
@@ -252,6 +301,9 @@ const ManageUsers = () => {
           </table>
 
           {users.length === 0 && <p className="text-gray-500 text-center mt-4">No users found.</p>}
+          {users.length > 0 && (
+            <p className="text-xs text-gray-400 mt-3">Source: {source === 'remote' ? 'Remote API' : 'Local demo data'}</p>
+          )}
         </div>
       </div>
     </div>

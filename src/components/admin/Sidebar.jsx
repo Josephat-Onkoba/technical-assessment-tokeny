@@ -6,12 +6,18 @@ const Sidebar = () => {
   const location = useLocation();
 
   // Sidebar menu items with icons
-  const menuItems = [
-    { path: "/admin/dashboard", label: "Dashboard", icon: <FaChartPie /> },
-    { path: "/admin/manage-users", label: "Manage Users", icon: <FaUsers /> },
-    { path: "/admin/manage-tasks", label: "Manage Tasks", icon: <FaTasks /> },
-    { path: "/admin/settings", label: "Settings", icon: <FaCog /> },
-  ];
+  const isAuthenticated = !!localStorage.getItem("token");
+  const menuItems = isAuthenticated
+    ? [
+        { path: "/admin/dashboard", label: "Dashboard", icon: <FaChartPie /> },
+        { path: "/admin/manage-users", label: "Manage Users", icon: <FaUsers /> },
+        { path: "/admin/user-logs", label: "User Logs", icon: <FaUsers /> },
+        { path: "/admin/manage-tasks", label: "Manage Tasks", icon: <FaTasks /> },
+        { path: "/admin/settings", label: "Settings", icon: <FaCog /> },
+      ]
+    : [
+        { path: "/admin/dashboard", label: "Dashboard", icon: <FaChartPie /> },
+      ];
 
   return (
     <div className="w-64 min-h-screen p-6 bg-gray-900 text-white glassmorphism border-r border-gray-700">
