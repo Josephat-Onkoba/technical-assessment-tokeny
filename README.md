@@ -41,10 +41,6 @@ npm run dev
 ```
 Open the URL shown in the terminal (typically http://localhost:5173).
 
-2) Demo accounts (local only)
-- Admin: admin@example.com / password123
-- User: user@example.com / password123
-
 ## How to test the tasks manually
 - Task 1: Visit “/”. You should be redirected to “/login”. After logging in, navbar shows Tasks/Profile and full side menu appears.
 - Task 2: On the user dashboard, click the filter icon/button in the header. Use the modal to filter by status or search; the Kanban board updates live.
