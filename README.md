@@ -48,7 +48,3 @@ Open the URL shown in the terminal (typically http://localhost:5173).
 - Task 1: Visit “/”. You should be redirected to “/login”. After logging in, navbar shows Tasks/Profile and full side menu appears.
 - Task 2: User → Task Filter (left sidebar) or go to “/user/task-filter”. Filter by status and search; counts update live.
 - Task 3: Admin → User Logs (left sidebar) or “/admin/user-logs”. Observe logs, click delete on a row to remove it.
-
-## Notes
-- The backend is not required to verify tasks; localStorage is used to simulate data.
-- `.env` files are excluded from version control.
