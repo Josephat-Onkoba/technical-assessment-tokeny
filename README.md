@@ -49,19 +49,6 @@ Open the URL shown in the terminal (typically http://localhost:5173).
 - Task 2: User → Task Filter (left sidebar) or go to “/user/task-filter”. Filter by status and search; counts update live.
 - Task 3: Admin → User Logs (left sidebar) or “/admin/user-logs”. Observe logs, click delete on a row to remove it.
 
-## Run automated tests
-```bash
-npm run test
-```
-
-## Files changed (high level)
-- Routing/auth: `src/App.jsx`, `src/contexts/AuthContext.jsx`
-- Navbar/Sidebars: `src/components/common/Navbar.jsx`, `src/pages/UserPages/UserSidebar.jsx`, `src/components/admin/Sidebar.jsx`
-- Task Filter: `src/components/tasks/TaskFilter.jsx`, `src/pages/UserPages/TaskFilterPage.jsx`
-- Admin Logs: `src/pages/AdminPages/UserLogPage.jsx`
-- Manage Users: `src/pages/AdminPages/ManageUsers.jsx`
-- Tests/setup: `vite.config.js`, `vitest.setup.js`, `src/__tests__/app.e2e.test.jsx`
-
 ## Notes
 - The backend is not required to verify tasks; localStorage is used to simulate data.
 - `.env` files are excluded from version control.
