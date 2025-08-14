@@ -38,7 +38,6 @@ import UserPage from "./pages/UserPages/UserPage";
 import NotificationsPage from "./pages/UserPages/NotificationsPage";
 import CalendarPage from "./pages/UserPages/CalendarPage";
 import ProfilePage from "./pages/UserPages/ProfilePage";
-import TaskFilterPage from "./pages/UserPages/TaskFilterPage";
 
 // Feature Components
 import TaskFilter from "./components/tasks/TaskFilter";
@@ -213,14 +212,6 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ProfilePage />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/user/task-filter" 
-                  element={
-                    <ProtectedRoute>
-                      <TaskFilterPage />
                     </ProtectedRoute>
                   } 
                 />

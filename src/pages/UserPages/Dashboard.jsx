@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import { FaFilter } from 'react-icons/fa';
+import InlineTaskFilter from '../../components/tasks/InlineTaskFilter';
 import { DndContext, closestCorners } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Bar } from "react-chartjs-2";
@@ -16,6 +18,7 @@ const UserDashboard = () => {
     "In Progress": [],
     Completed: [],
   });
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
 
   const [notes, setNotes] = useState(localStorage.getItem("notes") || "");
   const audioRef = useRef(new Audio(notificationSound));
@@ -25,16 +28,26 @@ const UserDashboard = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Helper to categorize tasks for Kanban
+  const categorize = (taskList) => ({
+    "To Do": taskList.filter((task) => task.progress <= 40),
+    "In Progress": taskList.filter((task) => task.progress > 40 && task.progress <= 80),
+    Completed: taskList.filter((task) => task.progress > 80),
+  });
+
+  // All tasks for filtering
+  const [allTasks, setAllTasks] = useState([]);
+
   useEffect(() => {
     const storedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const categorizedTasks = {
-      "To Do": storedTasks.filter((task) => task.progress <= 40),
-      "In Progress": storedTasks.filter((task) => task.progress > 40 && task.progress <= 80),
-      Completed: storedTasks.filter((task) => task.progress > 80),
-    };
-    setTasks(categorizedTasks);
+    setAllTasks(storedTasks);
+    setTasks(categorize(storedTasks));
     checkDeadlines(storedTasks);
   }, []);
+  // Handler for filter modal
+  const handleFilter = (filtered) => {
+    setTasks(categorize(filtered));
+  };
 
   useEffect(() => {
     localStorage.setItem("notes", notes);
@@ -109,9 +122,29 @@ const UserDashboard = () => {
       <UserSidebar />
 
       <div className="flex-1 p-6">
-        <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
-          🚀 User Dashboard
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text">
+            🚀 User Dashboard
+          </h2>
+          <button
+            className="ml-4 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            onClick={() => setFilterModalOpen(true)}
+            aria-label="Open task filter"
+          >
+            <FaFilter />
+            <span className="hidden sm:inline">Filter Tasks</span>
+          </button>
+        </div>
+        {filterModalOpen && (
+          <InlineTaskFilter
+            onFilter={handleFilter}
+            onClose={() => {
+              setFilterModalOpen(false);
+              // Reset Kanban to all tasks when closing filter
+              setTasks(categorize(allTasks));
+            }}
+          />
+        )}
         <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
 
         {/* Kanban Board */}

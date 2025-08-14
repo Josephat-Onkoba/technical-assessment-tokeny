@@ -15,8 +15,9 @@ This repository contains a working React/Vite app with a Node/Express backend sc
 - When logged out, only the Dashboard tab shows in sidebars; navbar hides Tasks/Profile.
 
 2) Task 2 – Task Filter
-- Dedicated page at /user/task-filter with the user sidebar.
-- Filter by status (All/Complete/Incomplete) and search by title/description.
+- Accessible via a filter icon/button at the top right of the user dashboard (no separate page).
+- Opens a modal with status (All/Complete/Incomplete) and search by title/description.
+- Kanban board updates live as you filter/search.
 - Reads tasks from localStorage and normalizes different task shapes.
 
 3) Task 3 – Admin User Logs
@@ -46,5 +47,5 @@ Open the URL shown in the terminal (typically http://localhost:5173).
 
 ## How to test the tasks manually
 - Task 1: Visit “/”. You should be redirected to “/login”. After logging in, navbar shows Tasks/Profile and full side menu appears.
-- Task 2: User → Task Filter (left sidebar) or go to “/user/task-filter”. Filter by status and search; counts update live.
+- Task 2: On the user dashboard, click the filter icon/button in the header. Use the modal to filter by status or search; the Kanban board updates live.
 - Task 3: Admin → User Logs (left sidebar) or “/admin/user-logs”. Observe logs, click delete on a row to remove it.

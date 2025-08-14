@@ -9,10 +9,9 @@ const UserSidebar = () => {
   const isAuthenticated = !!localStorage.getItem("token");
   const menuItems = isAuthenticated
     ? [
-        { path: "/user/dashboard", label: "Dashboard", icon: <FaChartBar /> },
-        { path: "/user/userpage", label: "Create Tasks", icon: <FaTasks /> },
-  { path: "/user/task-filter", label: "Task Filter", icon: <FaTasks /> },
-        { path: "/user/calendar", label: "Calendar", icon: <FaCalendarAlt /> },
+  { path: "/user/dashboard", label: "Dashboard", icon: <FaChartBar /> },
+  { path: "/user/userpage", label: "Create Tasks", icon: <FaTasks /> },
+  { path: "/user/calendar", label: "Calendar", icon: <FaCalendarAlt /> },
         { path: "/user/notifications", label: "Notifications", icon: <FaBell /> },
         { path: "/user/profile", label: "Profile", icon: <FaUser /> },
       ]
